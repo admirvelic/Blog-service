@@ -12,8 +12,7 @@ spring:
     properties:
       hibernate:
         format_sql: true
-    database: mariaDb
-    database-platform: org.hibernate.dialect.MariaDbDialect
+        dialect: MariaDB
 
 application:
   security:
