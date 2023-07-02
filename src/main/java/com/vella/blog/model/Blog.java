@@ -20,7 +20,7 @@ public class Blog {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "appUserId")
+    @JoinColumn(name = "userId")
     private User user;
 
     private String title;
