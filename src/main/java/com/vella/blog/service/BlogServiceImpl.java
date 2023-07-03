@@ -26,7 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class BlogServiceImpl implements BlogService{
 
   private final BlogRepo blogRepo;
-  private final UserRepository appUserRepo;
+  private final UserRepository userRepo;
   private final TokenRepository tokenRepo;
   @Override
   public Blog getBlogById(Long id) {
@@ -74,7 +74,7 @@ public class BlogServiceImpl implements BlogService{
       log.error("Error saving new blog. Field 'Text' is empty");
       throw new IllegalArgumentException("Field 'Text' is empty");
     }
-    if((appUserRepo.findById(blog.getUser().getId())).isEmpty()) {
+    if((userRepo.findById(blog.getUser().getId())).isEmpty()) {
       log.error("Error saving new blog. Field 'User' is empty");
       throw new IllegalArgumentException("Field 'User' is empty");
     }
@@ -110,11 +110,12 @@ public class BlogServiceImpl implements BlogService{
       blog.setDateEditedAt(LocalDate.now());
       blog.setTimeEditedAt(LocalTime.now());
 
-      if(tokenRepo.findUserByToken(token).isEmpty()){
-        throw new IllegalArgumentException("Field saving new blog. No AppUser found");
+      String tokenSubstring = token.substring(7);
+      Optional<User> userOptional = userRepo.findUserByToken(tokenSubstring);
+      if (userOptional.isEmpty()) {
+        throw new IllegalArgumentException("Error saving new blog. No AppUser found.");
       }
-      User user = tokenRepo.findUserByToken(token).get();
-
+      User user = userOptional.get();
       blog.setUser(user);
 
       log.info("Saving new blog {} to the database", blog.getId());
@@ -135,7 +136,7 @@ public class BlogServiceImpl implements BlogService{
       log.error("Error saving new blog. Field 'Text' is empty");
       throw new IllegalArgumentException("Field 'Text' is empty");
     }
-    if((appUserRepo.findById(blog.getUser().getId())).isEmpty()) {
+    if((userRepo.findById(blog.getUser().getId())).isEmpty()) {
       log.error("Error saving new blog. Field 'User' is empty");
       throw new IllegalArgumentException("Field 'User' is empty");
     }
