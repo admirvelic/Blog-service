@@ -110,11 +110,12 @@ public class BlogServiceImpl implements BlogService{
       blog.setDateEditedAt(LocalDate.now());
       blog.setTimeEditedAt(LocalTime.now());
 
-      if(userRepo.findUserByToken(token.substring(7)).isEmpty()){
-        throw new IllegalArgumentException("Field saving new blog. No AppUser found");
+      String tokenSubstring = token.substring(7);
+      Optional<User> userOptional = userRepo.findUserByToken(tokenSubstring);
+      if (userOptional.isEmpty()) {
+        throw new IllegalArgumentException("Error saving new blog. No AppUser found.");
       }
-      User user = userRepo.findUserByToken(token.substring(7)).get();
-
+      User user = userOptional.get();
       blog.setUser(user);
 
       log.info("Saving new blog {} to the database", blog.getId());
